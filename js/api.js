@@ -87,13 +87,14 @@ async function logout() {
 }
 
 const COLOR_THEME_OPTIONS = [
+    { id: "pearl", label: "Pearl", swatch: "#e8e8eb" },
     { id: "default", label: "Default", swatch: "#101114" },
     { id: "midnight", label: "Midnight", swatch: "#0a0d14" },
     { id: "graphite", label: "Graphite", swatch: "#17191d" },
     { id: "frost", label: "Frost", swatch: "#dfe7ef" },
     { id: "ocean", label: "Ocean", swatch: "#0b1c2a" },
     { id: "ember", label: "Ember", swatch: "#241514" },
-    { id: "ruby", label: "Ruby", swatch: "#3a121c" },
+    { id: "ruby", label: "Ruby Graphite", swatch: "#3a121c" },
     { id: "violet", label: "Violet", swatch: "#21152f" },
     { id: "forest", label: "Forest", swatch: "#10251d" },
     { id: "amber", label: "Amber", swatch: "#30210d" },
@@ -123,16 +124,22 @@ const XTHEME_OPTIONS = [
 const THEME_OPTIONS = [...COLOR_THEME_OPTIONS, ...XTHEME_OPTIONS];
 
 function applyTheme(themeId) {
-    const theme = THEME_OPTIONS.some((item) => item.id === themeId) ? themeId : "default";
+    const theme = THEME_OPTIONS.some((item) => item.id === themeId) ? themeId : "pearl";
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("shoyu-theme", theme);
 
-    document.querySelectorAll("[data-theme]").forEach((option) => {
+    document.querySelectorAll(".theme-option[data-theme]").forEach((option) => {
         option.classList.toggle("is-selected", option.dataset.theme === theme);
     });
 }
 
-applyTheme(localStorage.getItem("shoyu-theme") || "violet");
+const themeMigrationKey = "ryex-pearl-workspace-v2";
+if (localStorage.getItem(themeMigrationKey) !== "1") {
+    applyTheme("pearl");
+    localStorage.setItem(themeMigrationKey, "1");
+} else {
+    applyTheme(localStorage.getItem("shoyu-theme") || "pearl");
+}
 
 // ---------- NAV (dipakai kotak-kotak di Dashboard, bukan sidebar) ---------- //
 const NAV_ITEMS = [
@@ -145,7 +152,7 @@ const NAV_ITEMS = [
     { href: "/system.html", icon: "system", label: "System Status", sub: "System health", roles: ["OWNER", "ADMIN", "RESELLER", "VVIP", "PREMIUM"] },
     { href: "/tools.html", icon: "system", label: "Tools", sub: "Useful utilities" },
     { href: "/database.html", icon: "database", label: "Database", sub: "Manage users", roles: ["OWNER", "ADMIN", "RESELLER"] },
-    { href: "/profile.html", icon: "profile", label: "Profile", sub: "Account info" },
+    { href: "/profile.html", icon: "profile", label: "Profile", sub: "Telegram profile" },
 ];
 
 function isInternalPageLink(anchor, event) {
@@ -186,10 +193,7 @@ function renderShell(user, activeHref) {
         ? `<a class="sidebar-link" href="${brand.telegramOwnerContact}" target="_blank" rel="noopener">${icon("owner")}<span>Owner</span></a>`
         : "";
     const logoMarkup = brand.logoPhoto
-        ? `<img class="brand-photo" src="${brand.logoPhoto}" alt="${brand.webName || "SHOYU"} logo">`
-        : "";
-    const menuLogoMarkup = brand.logoPhoto
-        ? `<img class="menu-logo" src="${brand.logoPhoto}" alt="Open sidebar">`
+        ? `<img class="brand-photo" src="${brand.logoPhoto}" alt="${brand.webName || "RYEX - PANEL"} logo">`
         : "";
     const visibleNavItems = NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(user.role));
     const navigation = visibleNavItems.map((item) => `
@@ -218,10 +222,11 @@ function renderShell(user, activeHref) {
     }).join("");
 
     shell.innerHTML = `
-        <aside class="sidebar" id="sidebar">
+        <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Close navigation" hidden></button>
+        <aside class="sidebar" id="sidebar" aria-hidden="true" inert>
             <a class="sidebar-brand" href="/dashboard.html" aria-label="Open dashboard" title="Dashboard">
                 ${logoMarkup}
-                <span class="sidebar-brand-copy"><strong class="brand-wordmark brand-wordmark-sidebar">${brand.webName || "SHOYU"}</strong><small>${brand.panelLabel || "Control panel"}</small></span>
+                <span class="sidebar-brand-copy"><strong class="brand-wordmark brand-wordmark-sidebar">${brand.webName || "RYEX - PANEL"}</strong><small>${brand.panelLabel || "Control panel"}</small></span>
             </a>
             <div class="sidebar-section-label">Workspace</div>
             <nav class="sidebar-navigation" aria-label="Primary navigation">
@@ -239,11 +244,20 @@ function renderShell(user, activeHref) {
         <main class="main">
             <div class="topbar">
                 <div class="topbar-left">
-                    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle sidebar" title="Toggle sidebar">${menuLogoMarkup}</button>
+                    <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" title="Open navigation">${icon("menu")}</button>
                     ${!isDashboard ? `<a class="back-btn" href="/dashboard.html">${icon("back")}</a>` : ""}
                     <div class="topbar-identity"><h1 id="page-title"></h1></div>
                 </div>
-                <div class="topbar-actions"><div class="theme-menu-wrap"><button class="theme-toggle" id="theme-toggle" aria-label="Choose theme">Theme</button><div class="theme-menu" id="theme-menu" hidden><div class="theme-group"><div class="theme-group-label">Color</div>${colorThemeOptions}</div><div class="theme-group"><div class="theme-group-label">XTheme</div>${xThemeOptions}</div><button type="button" class="theme-more" id="theme-more">More themes</button></div></div><span class="role-badge">${user.role}</span></div>
+                        <div class="topbar-actions">
+                            <div class="theme-menu-wrap">
+                                <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Choose theme" aria-haspopup="true" aria-expanded="false">${icon("system")}<span>Theme</span></button>
+                                <div class="theme-menu" id="theme-menu" hidden>
+                                    <div class="theme-group"><div class="theme-group-label">Color</div>${colorThemeOptions}</div>
+                                    <div class="theme-group"><div class="theme-group-label">XTheme</div>${xThemeOptions}</div>
+                                    <button type="button" class="theme-more" id="theme-more">More themes</button>
+                                </div>
+                            </div>
+                        </div>
             </div>
             <div id="page-content"></div>
         </main>
@@ -251,35 +265,82 @@ function renderShell(user, activeHref) {
 
     document.body.prepend(shell);
     document.getElementById("logout-btn").addEventListener("click", logout);
-    document.getElementById("menu-toggle").addEventListener("click", () => {
-        document.querySelector(".app-shell").classList.toggle("sidebar-collapsed");
-        document.getElementById("sidebar").classList.toggle("open");
+    const sidebar = document.getElementById("sidebar");
+    const main = shell.querySelector(".main");
+    const sidebarToggle = document.getElementById("menu-toggle");
+    const sidebarBackdrop = document.getElementById("sidebar-backdrop");
+    const closeSidebar = (restoreFocus = false) => {
+        sidebar.classList.remove("open");
+        sidebar.setAttribute("aria-hidden", "true");
+        sidebar.inert = true;
+        main.inert = false;
+        document.body.classList.remove("sidebar-open");
+        sidebarBackdrop.hidden = true;
+        sidebarToggle.setAttribute("aria-expanded", "false");
+        sidebarToggle.setAttribute("aria-label", "Open navigation");
+        sidebarToggle.title = "Open navigation";
+        if (restoreFocus) sidebarToggle.focus();
+    };
+    const openSidebar = () => {
+        sidebar.classList.add("open");
+        sidebar.removeAttribute("aria-hidden");
+        sidebar.inert = false;
+        main.inert = true;
+        document.body.classList.add("sidebar-open");
+        sidebarBackdrop.hidden = false;
+        sidebarToggle.setAttribute("aria-expanded", "true");
+        sidebarToggle.setAttribute("aria-label", "Close navigation");
+        sidebarToggle.title = "Close navigation";
+        sidebar.querySelector("a")?.focus();
+    };
+    sidebarToggle.addEventListener("click", () => {
+        if (sidebar.classList.contains("open")) closeSidebar(true);
+        else openSidebar();
     });
+    sidebarBackdrop.addEventListener("click", () => closeSidebar(true));
+    sidebar.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => closeSidebar()));
     document.addEventListener("pointerdown", (event) => {
-        const sidebar = document.getElementById("sidebar");
-        const toggle = document.getElementById("menu-toggle");
-        if (window.innerWidth <= 860 && sidebar.classList.contains("open") && !sidebar.contains(event.target) && !toggle.contains(event.target)) {
-            sidebar.classList.remove("open");
+        if (sidebar.classList.contains("open") && !sidebar.contains(event.target) && !sidebarToggle.contains(event.target) && !sidebarBackdrop.contains(event.target)) {
+            closeSidebar();
         }
     });
     document.addEventListener("keydown", (event) => {
-        if (event.key !== "Escape") return;
-        const sidebar = document.getElementById("sidebar");
-        if (window.innerWidth <= 860) sidebar.classList.remove("open");
+        if (event.key === "Escape" && sidebar.classList.contains("open")) closeSidebar(true);
     });
     const themeToggle = document.getElementById("theme-toggle");
     const themeMenu = document.getElementById("theme-menu");
     const themeMore = document.getElementById("theme-more");
-    themeToggle.addEventListener("click", (event) => { event.stopPropagation(); themeMenu.hidden = !themeMenu.hidden; });
+    const themeMenuWrap = themeToggle.closest(".theme-menu-wrap");
+    const closeThemeMenu = () => {
+        themeMenu.hidden = true;
+        themeToggle.setAttribute("aria-expanded", "false");
+    };
+    themeToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        themeMenu.hidden = !themeMenu.hidden;
+        themeToggle.setAttribute("aria-expanded", String(!themeMenu.hidden));
+    });
     themeMore.addEventListener("click", (event) => {
         event.stopPropagation();
         const expanded = themeMenu.classList.toggle("is-expanded");
         themeMore.textContent = expanded ? "Show fewer" : "More themes";
     });
     themeMenu.querySelectorAll("[data-theme]").forEach((option) => {
-        option.addEventListener("click", () => { applyTheme(option.dataset.theme); themeMenu.hidden = true; });
+        option.addEventListener("click", () => {
+            applyTheme(option.dataset.theme);
+            closeThemeMenu();
+        });
     });
-    document.addEventListener("click", () => { themeMenu.hidden = true; }, { once: true });
+    document.addEventListener("pointerdown", (event) => {
+        if (themeMenu.hidden || themeMenuWrap.contains(event.target)) return;
+        closeThemeMenu();
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || themeMenu.hidden) return;
+        closeThemeMenu();
+        themeToggle.focus();
+    });
+    themeMenu.addEventListener("click", (event) => event.stopPropagation());
 
     return document.getElementById("page-content");
 }

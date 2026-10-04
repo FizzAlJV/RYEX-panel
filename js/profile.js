@@ -7,33 +7,28 @@
 
     const brand = window.__BRAND__ || {};
     const fallbackName = user.username || brand.webName || "User";
-    const fallbackInitial = fallbackName.slice(0, 1).toUpperCase();
-
-    const statusText = (user.status || "active").toLowerCase() === "active" ? "Active" : String(user.status || "Active");
-    const expiryText = user.expiredAt ? new Date(user.expiredAt).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }) : "Lifetime";
+    const escapeHtml = (value) => String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    const statusText = (user.status || "active").toLowerCase() === "active"
+        ? "Active"
+        : String(user.status || "Active");
 
     content.innerHTML = `
-        <div class="page-intro"><div><span class="page-kicker">Account center</span><h2>Profile</h2><p>Account identity, access, and subscription status.</p></div></div>
+        <div class="page-intro"><div><span class="page-kicker">Account center</span><h2>Profile</h2><p>Your Telegram identity and account security.</p></div></div>
         <div class="profile-layout">
             <div class="card profile-identity" id="profile-identity">
-                <div class="profile-avatar" id="profile-avatar">${fallbackInitial}</div>
-                <h3 id="profile-name">${user.username}</h3>
-                <p id="profile-handle">${brand.profileLabel || "Panel account"}</p>
-                <span class="pill connected">${statusText}</span>
+                <div class="profile-avatar" id="profile-avatar">${escapeHtml(fallbackName.slice(0, 1).toUpperCase())}</div>
+                <span class="profile-telegram-label">TELEGRAM PROFILE</span>
+                <h3 id="profile-name">${escapeHtml(fallbackName)}</h3>
+                <p id="profile-handle">${escapeHtml(brand.profileLabel || "Telegram account")}</p>
+                <span class="pill connected" id="profile-status">${escapeHtml(statusText)}</span>
             </div>
-
-            <div class="card profile-details-card">
-                <div class="section-heading"><div><h3>Account details</h3><p>Current account information.</p></div></div>
-                <table>
-                    <tr><td>Username</td><td><strong>${user.username}</strong></td></tr>
-                    <tr><td>Role</td><td><span class="pill connected">${user.role}</span></td></tr>
-                    <tr><td>Status</td><td>${statusText}</td></tr>
-                    <tr><td>Expired</td><td>${expiryText}</td></tr>
-                </table>
-            </div>
-
             <div class="card profile-password-card">
-                <div class="section-heading"><div><h3>Change password</h3><p>Update your password for this account.</p></div></div>
+                <div class="section-heading"><div><h3>Update password</h3><p>Choose a strong password you do not use elsewhere.</p></div></div>
                 <form id="change-password-form" class="profile-password-form">
                     <div class="field"><label for="current-password">Current password</label><input id="current-password" name="currentPassword" type="password" autocomplete="current-password" required></div>
                     <div class="field"><label for="new-password">New password</label><input id="new-password" name="newPassword" type="password" minlength="8" maxlength="72" autocomplete="new-password" required><small>Use 8-72 characters.</small></div>
@@ -48,16 +43,28 @@
     try {
         const response = await api("/auth/telegram-profile");
         const profile = response.profile;
-        if (profile?.name) document.getElementById("profile-name").textContent = profile.name;
-        if (profile?.username) document.getElementById("profile-handle").textContent = profile.username;
-        if (profile?.photo) {
-            const identity = document.getElementById("profile-identity");
-            identity.classList.add("has-telegram-photo");
-            identity.style.setProperty("--profile-photo", `url("${profile.photo}")`);
-            document.getElementById("profile-avatar").innerHTML = `<img src="${profile.photo}" alt="Telegram profile photo">`;
+        if (profile) {
+            if (profile.name) document.getElementById("profile-name").textContent = profile.name;
+            if (profile.username) document.getElementById("profile-handle").textContent = profile.username;
+            if (profile.photo) {
+                const avatar = document.getElementById("profile-avatar");
+                const photo = document.createElement("img");
+                photo.src = profile.photo;
+                photo.alt = `${profile.name || fallbackName} Telegram profile photo`;
+                avatar.replaceChildren(photo);
+                document.getElementById("profile-identity").classList.add("has-telegram-photo");
+            }
+            document.getElementById("profile-status").textContent = "Telegram connected";
+        } else {
+            document.getElementById("profile-handle").textContent = "Telegram profile not linked";
+            document.getElementById("profile-status").textContent = "Not connected";
+            document.getElementById("profile-status").classList.replace("connected", "disconnected");
         }
-    } catch {
-        // Keep the local account fallback when Telegram profile lookup is unavailable.
+    } catch (error) {
+        document.getElementById("profile-handle").textContent = "Telegram profile could not be loaded";
+        document.getElementById("profile-status").textContent = "Unavailable";
+        document.getElementById("profile-status").classList.replace("connected", "disconnected");
+        toast(error.message || "Unable to load Telegram profile.", "error");
     }
 
     document.getElementById("change-password-form").addEventListener("submit", async (event) => {

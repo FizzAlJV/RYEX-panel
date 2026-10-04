@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pricing - SHOYU Panel</title>
-<link rel="stylesheet" href="/css/style.css?v=20260910-1">
+<title>Pricing - RYEX - PANEL</title>
+<link rel="stylesheet" href="/css/style.css?v=20261004-ryex-white-drawer">
 </head>
 <body>
 <div class="pricing-shell">
@@ -15,7 +15,7 @@
                 <div class="pricing-hero-body">
                     <div class="brand pricing-brand">
                         <span class="icon" id="brand-icon"></span>
-                        <h1 id="brand-title" class="brand-wordmark brand-wordmark-pricing">SHOYU</h1>
+                        <h1 id="brand-title" class="brand-wordmark brand-wordmark-pricing">RYEX - PANEL</h1>
                     </div>
                     <div class="pricing-hero-copy">
                         <h2>Upgrade your workflow with a sharper edge.</h2>
@@ -40,7 +40,7 @@
 </div>
 
 <script src="/js/icons.js"></script>
-<script src="/js/api.js?v=20260910-1"></script>
+<script src="/js/api.js?v=20261004-ryex-white-drawer"></script>
 <script>
     async function renderPricing() {
         const brand = await loadBranding() || window.__BRAND__ || {};
@@ -55,7 +55,7 @@
         if (brand.webSubtitle) brandSubtitle.textContent = brand.webSubtitle;
         if (brand.pricingBadge) document.getElementById("pricing-badge").textContent = brand.pricingBadge;
         if (brand.logoPhoto) {
-            brandIcon.innerHTML = `<img class="brand-photo splash-photo" src="${brand.logoPhoto}" alt="${brand.webName || 'SHOYU'} logo">`;
+            brandIcon.innerHTML = `<img class="brand-photo splash-photo" src="${brand.logoPhoto}" alt="${brand.webName || 'RYEX - PANEL'} logo">`;
         }
 
         let pricing = { plans: {} };

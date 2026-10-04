@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - SHOYU Panel</title>
-<link rel="stylesheet" href="/css/style.css?v=20260914-1">
+<title>Login - RYEX - PANEL</title>
+<link rel="stylesheet" href="/css/style.css?v=20261004-ryex-white-drawer">
 </head>
 <body class="auth-boot">
 <div class="login-splash" id="login-splash" aria-hidden="true">
-    <div class="splash-mark"><img src="/assets/shoyu-logo.svg" alt="SHOYU"></div>
-    <strong id="splash-title" class="brand-wordmark brand-wordmark-splash">SHOYU</strong>
+    <div class="splash-mark"><img src="https://files.catbox.moe/qgw68t.jpg" alt="RYEX - PANEL"></div>
+    <strong id="splash-title" class="brand-wordmark brand-wordmark-splash">RYEX - PANEL</strong>
     <span id="splash-tagline">Management Panel</span>
     <div class="splash-line"><i></i></div>
 </div>
@@ -18,13 +18,19 @@
         <div class="auth-split">
             <section class="auth-intro">
                 <div class="auth-intro-top">
-                    <span class="icon" id="brand-icon"><img class="brand-photo splash-photo" src="/assets/shoyu-logo.svg" alt="SHOYU logo"></span>
-                    <span class="auth-intro-brand">SHOYU</span>
+                    <span class="icon" id="brand-icon"><img class="brand-photo splash-photo" src="https://files.catbox.moe/qgw68t.jpg" alt="RYEX - PANEL logo"></span>
+                    <span class="auth-intro-brand">RYEX - PANEL</span>
                 </div>
                 <div class="auth-intro-copy">
                     <span class="auth-kicker">Control Access</span>
                     <h1>Management Console</h1>
                     <p>Secure operator access for WhatsApp, automation, and customer operations.</p>
+                </div>
+                <div class="auth-intro-video">
+                    <video autoplay muted loop playsinline preload="auto" aria-hidden="true">
+                        <source src="https://files.catbox.moe/r6iqxn.mp4" type="video/mp4">
+                    </video>
+                    <p class="auth-intro-video-error" role="status" hidden>Intro video tidak dapat dimuat.</p>
                 </div>
                 <div class="auth-intro-grid">
                     <div class="auth-intro-metric">
@@ -65,8 +71,8 @@
             <section class="auth-card glass">
                 <div class="auth-card-orbit" aria-hidden="true"></div>
                 <div class="brand">
-                    <span class="icon" id="brand-icon-login"><img class="brand-photo splash-photo" src="/assets/shoyu-logo.svg" alt="SHOYU logo"></span>
-                    <h2 id="brand-title" class="brand-wordmark brand-wordmark-login">SHOYU</h2>
+                    <span class="icon" id="brand-icon-login"><img class="brand-photo splash-photo" src="https://files.catbox.moe/qgw68t.jpg" alt="RYEX - PANEL logo"></span>
+                    <h2 id="brand-title" class="brand-wordmark brand-wordmark-login">RYEX - PANEL</h2>
                     <p id="brand-subtitle">WhatsApp Management Panel</p>
                 </div>
                 <div class="auth-heading">
@@ -95,10 +101,10 @@
     </div>
 </div>
 <script src="/js/icons.js"></script>
-<script src="/js/api.js?v=20260907-3"></script>
+<script src="/js/api.js?v=20261004-ryex-white-drawer"></script>
 <script>
     const splashMark = document.getElementById("login-splash").querySelector(".splash-mark");
-    splashMark.innerHTML = `<img class="brand-photo splash-photo" src="/assets/shoyu-logo.svg" alt="SHOYU logo">`;
+    splashMark.innerHTML = `<img class="brand-photo splash-photo" src="https://files.catbox.moe/qgw68t.jpg" alt="RYEX - PANEL logo">`;
 
     window.setTimeout(() => {
         document.body.classList.remove("auth-boot");
@@ -149,6 +155,11 @@
     const mobileBtn = document.getElementById("mobile-login-btn");
     const mobilePassword = document.getElementById("mobile-password");
     const mobilePasswordToggle = document.getElementById("mobile-password-toggle");
+    const introVideo = document.querySelector(".auth-intro-video video");
+    introVideo.addEventListener("error", () => {
+        document.querySelector(".auth-intro-video-error").hidden = false;
+    });
+    if (introVideo.error) document.querySelector(".auth-intro-video-error").hidden = false;
 
     mobilePasswordToggle.addEventListener("click", () => {
         const visible = mobilePassword.type === "text";
