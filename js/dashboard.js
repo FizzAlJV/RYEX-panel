@@ -89,7 +89,7 @@
 
                 <section class="dashboard-video-hero ryex-video-hero" aria-label="RYEX Panel video">
                     <video class="dashboard-panel-video" autoplay muted loop playsinline preload="auto" aria-label="Video RYEX Panel">
-                        <source src="https://files.catbox.moe/r6iqxn.mp4" type="video/mp4">
+                        <source src="https://files.catbox.moe/d4uhzw.mp4" type="video/mp4">
                     </video>
                     <p class="dashboard-video-error" role="status" hidden>Video panel tidak dapat dimuat. Periksa koneksi lalu muat ulang halaman.</p>
                 </section>
