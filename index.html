@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - RYEX - PANEL</title>
-<link rel="stylesheet" href="/css/style.css?v=20261004-ryex-white-drawer">
+<link rel="stylesheet" href="/css/style.css?v=20261004-ryex-carousel-watermark-v4">
 </head>
 <body class="auth-boot">
 <div class="login-splash" id="login-splash" aria-hidden="true">
@@ -28,9 +28,9 @@
                 </div>
                 <div class="auth-intro-video">
                     <video autoplay muted loop playsinline preload="auto" aria-hidden="true">
-                        <source src="https://files.catbox.moe/d4uhzw.mp4" type="video/mp4">
+                        <source src="https://files.catbox.moe/r6iqxn.mp4" type="video/mp4">
                     </video>
-                    <p class="auth-intro-video-error" role="status" hidden>Intro video tidak dapat dimuat.</p>
+                    <p class="auth-intro-video-error" role="status" hidden>Video tidak dapat dimainkan. Sila cuba lagi kemudian.</p>
                 </div>
                 <div class="auth-intro-grid">
                     <div class="auth-intro-metric">
@@ -101,7 +101,7 @@
     </div>
 </div>
 <script src="/js/icons.js"></script>
-<script src="/js/api.js?v=20261004-ryex-white-drawer"></script>
+<script src="/js/api.js?v=20261004-ryex-default-theme-v5"></script>
 <script>
     const splashMark = document.getElementById("login-splash").querySelector(".splash-mark");
     splashMark.innerHTML = `<img class="brand-photo splash-photo" src="https://files.catbox.moe/qgw68t.jpg" alt="RYEX - PANEL logo">`;
@@ -156,10 +156,14 @@
     const mobilePassword = document.getElementById("mobile-password");
     const mobilePasswordToggle = document.getElementById("mobile-password-toggle");
     const introVideo = document.querySelector(".auth-intro-video video");
+    const introVideoError = document.querySelector(".auth-intro-video-error");
     introVideo.addEventListener("error", () => {
-        document.querySelector(".auth-intro-video-error").hidden = false;
+        introVideoError.hidden = false;
     });
-    if (introVideo.error) document.querySelector(".auth-intro-video-error").hidden = false;
+    const clearIntroVideoError = () => { introVideoError.hidden = true; };
+    introVideo.addEventListener("loadeddata", clearIntroVideoError);
+    introVideo.addEventListener("playing", clearIntroVideoError);
+    if (introVideo.error) introVideoError.hidden = false;
 
     mobilePasswordToggle.addEventListener("click", () => {
         const visible = mobilePassword.type === "text";

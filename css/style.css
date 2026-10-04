@@ -3624,6 +3624,7 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     min-height: 100px;
     padding: 5px 12px 8px;
 }
+.ryex-dashboard > .ryex-welcome { z-index: 4; }
 .ryex-eyebrow,
 .ryex-section-heading > div > span,
 .ryex-account-top > div > span {
@@ -3648,6 +3649,7 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
 }
 .ryex-welcome h2 strong { color: var(--accent-strong); font-weight: 700; }
 .ryex-welcome p { margin: 0; color: var(--text-muted); font-size: 12px; }
+.ryex-welcome-actions { display: flex; align-items: center; gap: 16px; }
 .ryex-brand-mark {
     display: grid;
     justify-items: end;
@@ -3662,6 +3664,73 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     text-shadow: 0 1px 0 #b7b3b8, 0 2px 0 #858187, 0 3px 0 #5b575e, 0 5px 0 #39363c, 0 8px 14px rgba(0,0,0,.64), 0 0 20px color-mix(in srgb, var(--accent) 38%, transparent);
 }
 .ryex-brand-mark span { margin-top: 8px; color: var(--accent-strong); font: 600 8px "JetBrains Mono", monospace; letter-spacing: .36em; }
+.ryex-notification-wrap { position: relative; z-index: 5; }
+.ryex-notification-toggle {
+    position: relative;
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--glass-strong) 78%, transparent);
+    color: var(--text);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 8px 20px rgba(0,0,0,.14);
+    cursor: pointer;
+    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+.ryex-notification-toggle:hover,
+.ryex-notification-toggle[aria-expanded="true"] {
+    border-color: var(--border-hover);
+    background: var(--glass-hover);
+    transform: translateY(-1px);
+}
+.ryex-notification-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.ryex-notification-toggle > svg { width: 21px; height: 21px; }
+.ryex-notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: grid;
+    min-width: 19px;
+    height: 19px;
+    place-items: center;
+    padding: 0 4px;
+    border: 2px solid var(--bg-elevated);
+    border-radius: 999px;
+    background: var(--danger);
+    color: #fff;
+    font: 700 9px "JetBrains Mono", monospace;
+    font-variant-numeric: tabular-nums;
+}
+.ryex-notification-badge[hidden] { display: none; }
+.ryex-notification-popover {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    display: grid;
+    width: min(360px, calc(100vw - 36px));
+    max-height: min(420px, 70vh);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 10px;
+    padding: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border-hover);
+    border-radius: 17px;
+    background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+    box-shadow: 0 20px 48px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.1);
+    backdrop-filter: blur(24px) saturate(135%);
+    -webkit-backdrop-filter: blur(24px) saturate(135%);
+}
+.ryex-notification-popover[hidden] { display: none; }
+.ryex-notification-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ryex-notification-heading strong { color: var(--text); font-size: 12px; font-weight: 650; }
+.ryex-notification-heading > span { color: var(--text-faint); font: 500 9px "JetBrains Mono", monospace; }
+.ryex-notification-popover .notification-list { overflow-y: auto; scrollbar-width: thin; }
+.ryex-notification-popover .notification-item { padding: 10px; border-radius: 12px; }
+.ryex-notification-popover .notification-body strong { font-size: 10px; }
+.ryex-notification-popover .notification-body small { font-size: 10px; line-height: 1.45; }
+.ryex-notification-popover .notification-body time { font-size: 8px; }
 .ryex-video-hero {
     height: clamp(240px, 34vw, 390px);
     margin: 0;
@@ -3731,16 +3800,14 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
 .ryex-metric > div > strong { margin-top: 3px; color: var(--text); font: 700 23px "Montserrat", "Inter", sans-serif; }
 .ryex-metric > div > small { overflow: hidden; color: var(--text-muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 .ryex-workspace {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
-    align-items: start;
-    gap: 15px;
+    display: block;
 }
 .ryex-panel {
     margin: 0;
     padding: 18px;
     border-radius: 19px;
 }
+.ryex-access-panel { padding: 22px; }
 .ryex-section-heading {
     display: flex;
     align-items: center;
@@ -3755,37 +3822,188 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     letter-spacing: -.025em;
 }
 .ryex-heading-index { color: var(--text-faint); font: 500 9px "JetBrains Mono", monospace; letter-spacing: .08em; }
-.ryex-feature-grid {
+.ryex-carousel { min-width: 0; }
+.ryex-carousel-stage {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    overflow: hidden;
+    perspective: 1000px;
+    touch-action: pan-y;
+}
+.ryex-carousel-slide {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(520px, 62%);
+    height: 306px;
+    color: inherit;
+    text-decoration: none;
+    transform-style: preserve-3d;
+    transition: transform 680ms cubic-bezier(.22,1,.36,1), opacity 500ms ease, filter 500ms ease;
+}
+.ryex-carousel-slide[data-position="active"] {
+    z-index: 3;
+    opacity: 1;
+    filter: none;
+    transform: translate(-50%, -50%) translateZ(34px) scale(1);
+}
+.ryex-carousel-slide[data-position="previous"],
+.ryex-carousel-slide[data-position="next"] {
+    z-index: 2;
+    opacity: .66;
+    filter: saturate(.72);
+    transform: translate(-50%, -50%) translateX(var(--carousel-slide-x)) translateZ(-100px) rotateY(var(--carousel-slide-rotation)) scale(.84);
+}
+.ryex-carousel-slide[data-position="previous"] { --carousel-slide-x: -84%; --carousel-slide-rotation: 24deg; }
+.ryex-carousel-slide[data-position="next"] { --carousel-slide-x: 84%; --carousel-slide-rotation: -24deg; }
+.ryex-carousel-slide[data-position="hidden"] {
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) translateZ(-260px) scale(.55);
+}
+.ryex-carousel-slide:not([data-position="active"]) { cursor: pointer; }
+.ryex-carousel-card {
+    position: relative;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 19px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 38%),
+        linear-gradient(145deg, color-mix(in srgb, var(--bg-elevated) 96%, white), color-mix(in srgb, var(--bg-soft) 70%, var(--bg-elevated)));
+    box-shadow: 0 16px 34px rgba(32,39,52,.13), inset 0 1px 0 rgba(255,255,255,.68);
+    backdrop-filter: blur(18px) saturate(125%);
+    -webkit-backdrop-filter: blur(18px) saturate(125%);
+    transition: border-color 220ms ease, box-shadow 220ms ease;
+}
+.ryex-carousel-watermark {
+    position: absolute;
+    right: -20px;
+    bottom: -25px;
+    width: clamp(150px, 24vw, 240px);
+    height: auto;
+    opacity: .09;
+    pointer-events: none;
+    user-select: none;
+    filter: grayscale(1) brightness(1.8);
+}
+.ryex-carousel-card > :not(.ryex-carousel-watermark) { position: relative; z-index: 1; }
+.ryex-carousel-slide[data-position="active"] .ryex-carousel-card {
+    border-color: color-mix(in srgb, var(--accent) 36%, var(--border));
+    box-shadow: 0 20px 42px rgba(32,39,52,.17), inset 0 1px 0 rgba(255,255,255,.76), 0 0 24px color-mix(in srgb, var(--glow-soft) 62%, transparent);
+}
+.ryex-carousel-slide:focus-visible { outline: none; }
+.ryex-carousel-slide:focus-visible .ryex-carousel-card {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+.ryex-carousel-card-top,
+.ryex-carousel-open {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.ryex-carousel-number {
+    color: var(--text-faint);
+    font: 600 10px "JetBrains Mono", monospace;
+    letter-spacing: .12em;
+}
+.ryex-carousel-icon {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    justify-content: stretch;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    overflow: visible;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-.ryex-feature-grid .nav-box {
-    min-width: 0;
-    min-height: 64px;
-    gap: 10px;
-    padding: 10px;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
     border-radius: 13px;
+    background: color-mix(in srgb, var(--glass-strong) 76%, transparent);
+    color: var(--accent-strong);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.48);
 }
-.ryex-feature-grid .nav-box .label { font-size: 11px; font-weight: 600; }
-.ryex-feature-grid .nav-box .sub { font-size: 9px; }
-.ryex-feature-grid .nav-box .chevron { display: none; }
-.ryex-access-panel .dashboard-nav-toggle {
-    min-height: 36px;
-    margin-top: 11px;
-    border-radius: 11px;
+.ryex-carousel-icon svg { width: 21px; height: 21px; }
+.ryex-carousel-copy > span {
+    color: var(--text-faint);
+    font: 600 8px "JetBrains Mono", monospace;
+    letter-spacing: .15em;
 }
-.ryex-ops-column { display: grid; gap: 13px; min-width: 0; }
+.ryex-carousel-copy h4 {
+    margin: 7px 0 3px;
+    color: var(--text);
+    font: 650 clamp(17px, 2vw, 21px) "Montserrat", "Inter", sans-serif;
+    letter-spacing: -.035em;
+}
+.ryex-carousel-copy p { margin: 0; color: var(--text-muted); font-size: 11px; }
+.ryex-carousel-open {
+    justify-content: flex-start;
+    gap: 7px;
+    color: var(--accent-strong);
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: .035em;
+}
+.ryex-carousel-open .icon { width: 14px; height: 14px; }
+.ryex-carousel-open .icon svg { width: 100%; height: 100%; }
+.ryex-carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 38px;
+    margin-top: 4px;
+}
+.ryex-carousel-arrow {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--glass-strong) 84%, transparent);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+.ryex-carousel-arrow:hover {
+    border-color: var(--border-hover);
+    background: var(--glass-hover);
+    color: var(--text);
+    transform: scale(1.06);
+}
+.ryex-carousel-arrow:focus-visible,
+.ryex-carousel-indicator:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.ryex-carousel-arrow .icon { width: 16px; height: 16px; }
+.ryex-carousel-arrow .icon svg { width: 100%; height: 100%; }
+.ryex-carousel-indicators { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.ryex-carousel-indicator {
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--text-faint) 45%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--text-faint) 18%, transparent);
+    cursor: pointer;
+    transition: width 220ms ease, background 220ms ease, border-color 220ms ease;
+}
+.ryex-carousel-indicator.is-active {
+    width: 19px;
+    border-color: var(--accent);
+    background: var(--accent);
+}
+.ryex-carousel-count {
+    min-width: 40px;
+    color: var(--text-faint);
+    font: 500 9px "JetBrains Mono", monospace;
+    font-variant-numeric: tabular-nums;
+}
+.ryex-carousel-count > span { color: var(--text); }
+.ryex-ops-column { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 15px; min-width: 0; }
+.ryex-ops-below { margin-top: 0; }
 .ryex-account-card {
     min-height: 132px;
     margin: 0;
@@ -3842,25 +4060,6 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
 .ryex-status-grid .ryex-status-item:nth-last-child(-n+2) { border-bottom: 0; }
 .ryex-status-grid .status-name { font-size: 10px; }
 .ryex-status-grid .status-text { padding-left: 15px; font-size: 9px; }
-.ryex-notifications { min-width: 0; }
-.ryex-notifications .ryex-section-heading { margin-bottom: 10px; }
-.ryex-notifications .notification-count {
-    display: grid;
-    place-items: center;
-    min-width: 25px;
-    height: 25px;
-    padding: 0 6px;
-    border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--border));
-    border-radius: 9px;
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-    color: var(--accent-strong);
-    font: 600 10px "JetBrains Mono", monospace;
-}
-.ryex-notifications .notification-list { max-height: 210px; overflow: auto; scrollbar-width: thin; }
-.ryex-notifications .notification-item { padding: 10px; border-radius: 12px; }
-.ryex-notifications .notification-body strong { font-size: 10px; }
-.ryex-notifications .notification-body small { font-size: 10px; line-height: 1.45; }
-.ryex-notifications .notification-body time { font-size: 8px; }
 .ryex-activity-panel { min-width: 0; }
 .ryex-activity-log { margin-top: 0; }
 .ryex-activity-panel .empty-state { border: 0; background: transparent; }
@@ -3939,42 +4138,22 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     color: var(--text);
     font-size: 11px;
 }
-.page-dashboard .ryex-feature-grid {
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-.page-dashboard .ryex-feature-grid .nav-box {
-    min-width: 0;
-    background: linear-gradient(145deg, color-mix(in srgb, var(--glass) 80%, transparent), rgba(255,255,255,.012));
-    border-color: var(--border);
-}
-.page-dashboard .ryex-feature-grid .nav-box:hover { border-color: var(--border-hover); }
-.page-dashboard .ryex-access-panel .dashboard-nav-toggle {
-    display: block;
-    width: 100%;
-    flex: initial;
-}
 @media (max-width: 1000px) {
-    .ryex-workspace { grid-template-columns: minmax(0, 1fr) minmax(260px, .8fr); }
     .ryex-panel { padding: 15px; }
 }
 @media (max-width: 760px) {
     .ryex-dashboard { gap: 15px; }
     .ryex-welcome { min-height: 86px; padding-inline: 4px; }
-    .ryex-workspace { grid-template-columns: 1fr; }
-    .ryex-ops-column { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
-    .ryex-account-card,
-    .ryex-chat-launch { grid-column: 1 / -1; }
+    .ryex-ops-column { grid-template-columns: 1fr; gap: 10px; }
     .ryex-video-hero { height: clamp(220px, 48vw, 330px); }
     .butterfly-three { top: 64%; left: 72%; }
 }
 @media (max-width: 540px) {
     .ryex-dashboard { gap: 13px; padding-top: 2px; }
     .ryex-welcome { align-items: flex-start; gap: 6px; }
+    .ryex-welcome-actions { gap: 8px; }
+    .ryex-notification-toggle { width: 36px; height: 36px; border-radius: 12px; }
+    .ryex-notification-popover { right: -5px; width: min(330px, calc(100vw - 28px)); }
     .ryex-welcome h2 { max-width: 250px; font-size: 20px; line-height: 1.2; }
     .ryex-welcome p { max-width: 245px; font-size: 10px; line-height: 1.5; }
     .ryex-brand-mark { margin-top: 12px; padding-right: 1px; }
@@ -3992,14 +4171,15 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     .ryex-metric > div > strong { font-size: 19px; }
     .ryex-metric > div > small { max-width: 100%; font-size: 8px; }
     .ryex-panel { padding: 13px; border-radius: 16px; }
-    .ryex-feature-grid { gap: 7px; }
-    .ryex-feature-grid .nav-box { min-height: 59px; padding: 8px; }
-    .ryex-feature-grid .nav-box .icon { width: 28px; height: 28px; flex: 0 0 28px; }
-    .ryex-feature-grid .nav-box .label { font-size: 10px; }
-    .ryex-feature-grid .nav-box .sub { font-size: 8px; }
+    .ryex-access-panel { padding: 13px; }
+    .ryex-carousel-stage { height: 315px; }
+    .ryex-carousel-slide { width: min(320px, 78%); height: 260px; }
+    .ryex-carousel-slide[data-position="previous"] { --carousel-slide-x: -86%; }
+    .ryex-carousel-slide[data-position="next"] { --carousel-slide-x: 86%; }
+    .ryex-carousel-card { padding: 16px; }
+    .ryex-carousel-watermark { right: -12px; bottom: -16px; width: 168px; }
+    .ryex-carousel-controls { gap: 8px; }
     .ryex-ops-column { grid-template-columns: 1fr; gap: 10px; }
-    .ryex-account-card,
-    .ryex-chat-launch { grid-column: auto; }
     .ryex-account-card { min-height: 125px; padding: 14px; }
     .ryex-account-card .banner-content { inset: 14px; }
     .ryex-account-meta { gap: 7px 12px; }
@@ -4016,20 +4196,21 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
 @media (prefers-reduced-motion: reduce) {
     .ryex-butterfly,
     .ryex-butterfly .butterfly-wing,
-    .ryex-metric { animation: none !important; transition: none !important; }
+    .ryex-metric,
+    .ryex-notification-toggle { animation: none !important; transition: none !important; }
 }
 
 /* Pearl workspace: one neutral, light visual system for every panel surface. */
 :root[data-theme="pearl"] {
     color-scheme: light;
-    --bg: #f1f1f3;
-    --bg-elevated: #ffffff;
-    --bg-soft: #e7e7ea;
-    --glass: rgba(255,255,255,.72);
-    --glass-hover: rgba(255,255,255,.94);
-    --glass-strong: rgba(255,255,255,.88);
-    --border: rgba(58,59,66,.12);
-    --border-hover: rgba(58,59,66,.22);
+    --bg: #e4e4e7;
+    --bg-elevated: #f1f1f3;
+    --bg-soft: #d7d7dc;
+    --glass: rgba(244,244,246,.68);
+    --glass-hover: rgba(250,250,251,.88);
+    --glass-strong: rgba(248,248,249,.82);
+    --border: rgba(58,59,66,.16);
+    --border-hover: rgba(58,59,66,.27);
     --text: #25252b;
     --text-muted: #62636b;
     --text-faint: #85868e;
@@ -4037,24 +4218,24 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     --muted: #71727a;
     --accent: #777983;
     --accent-strong: #41424a;
-    --glow-soft: rgba(80,82,93,.12);
-    --glow-focus: rgba(80,82,93,.2);
-    --panel-shadow: 0 12px 30px rgba(30,31,37,.07);
-    --panel-shadow-strong: 0 20px 48px rgba(30,31,37,.1);
-    background: #f1f1f3;
+    --glow-soft: rgba(80,82,93,.14);
+    --glow-focus: rgba(80,82,93,.22);
+    --panel-shadow: 0 12px 30px rgba(30,31,37,.09);
+    --panel-shadow-strong: 0 20px 48px rgba(30,31,37,.12);
+    background: #e4e4e7;
 }
 :root[data-theme="pearl"] body {
     color: var(--text);
     font-family: "Inter", "Segoe UI", sans-serif;
     background:
-        radial-gradient(900px circle at 4% -18%, rgba(255,255,255,.98), transparent 52%),
-        radial-gradient(800px circle at 100% 0%, rgba(217,218,222,.52), transparent 50%),
-        linear-gradient(145deg, #f5f5f6, #ececef 70%, #f6f6f7);
+        radial-gradient(900px circle at 4% -18%, rgba(250,250,251,.86), transparent 52%),
+        radial-gradient(800px circle at 100% 0%, rgba(194,195,201,.58), transparent 50%),
+        linear-gradient(145deg, #ebebed, #dcdce0 70%, #e8e8eb);
 }
 :root[data-theme="pearl"] body::before {
     background:
-        radial-gradient(760px circle at 3% 6%, rgba(255,255,255,.48), transparent 45%),
-        radial-gradient(720px circle at 96% 94%, rgba(210,211,216,.25), transparent 50%);
+        radial-gradient(760px circle at 3% 6%, rgba(250,250,251,.38), transparent 45%),
+        radial-gradient(720px circle at 96% 94%, rgba(181,182,189,.3), transparent 50%);
 }
 :root[data-theme="pearl"] body::after { background: none; }
 :root[data-theme="pearl"] .app-shell {
@@ -4070,10 +4251,10 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     top: 14px;
     bottom: 14px;
     left: 14px;
-    border: 1px solid rgba(255,255,255,.9);
+    border: 1px solid rgba(255,255,255,.72);
     border-radius: 22px;
-    background: rgba(250,250,251,.78);
-    box-shadow: 0 16px 40px rgba(35,36,42,.08), inset 0 1px 0 #fff;
+    background: rgba(232,232,235,.9);
+    box-shadow: 0 16px 40px rgba(35,36,42,.1), inset 0 1px 0 rgba(255,255,255,.82);
     backdrop-filter: blur(22px) saturate(125%);
     -webkit-backdrop-filter: blur(22px) saturate(125%);
 }
@@ -4134,10 +4315,10 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     gap: 12px;
     margin-bottom: 24px;
     padding: 9px 12px;
-    border: 1px solid rgba(255,255,255,.92);
+    border: 1px solid rgba(255,255,255,.74);
     border-radius: 17px;
-    background: rgba(255,255,255,.68);
-    box-shadow: 0 10px 28px rgba(35,36,42,.055), inset 0 1px 0 #fff;
+    background: rgba(228,228,232,.82);
+    box-shadow: 0 10px 28px rgba(35,36,42,.075), inset 0 1px 0 rgba(255,255,255,.8);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
 }
@@ -4151,7 +4332,7 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     min-height: 40px;
     border: 1px solid rgba(62,63,70,.12);
     border-radius: 12px;
-    background: linear-gradient(145deg, #fff, #f1f1f3);
+    background: linear-gradient(145deg, #f0f0f2, #dcdce0);
     color: #4d4e55;
     box-shadow: 0 4px 12px rgba(29,30,36,.045), inset 0 1px 0 #fff;
 }
@@ -4188,7 +4369,7 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
 :root[data-theme="pearl"] .menu-toggle:hover,
 :root[data-theme="pearl"] .back-btn:hover {
     border-color: rgba(60,61,69,.22);
-    background: #fff;
+    background: #ededf0;
     color: #28282e;
     box-shadow: 0 6px 16px rgba(29,30,36,.08);
 }
@@ -4197,9 +4378,9 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     width: min(370px, calc(100vw - 30px));
     max-height: min(68vh, 470px);
     padding: 14px;
-    border-color: rgba(255,255,255,.96);
+    border-color: rgba(255,255,255,.78);
     border-radius: 17px;
-    background: rgba(250,250,251,.97);
+    background: rgba(235,235,238,.98);
     box-shadow: 0 18px 48px rgba(28,29,35,.16), inset 0 1px 0 #fff;
     backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(22px);
@@ -4207,13 +4388,13 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
 :root[data-theme="pearl"] .theme-group-label { color: #85868e; }
 :root[data-theme="pearl"] .theme-option {
     border-color: rgba(58,59,66,.08);
-    background: rgba(255,255,255,.8);
+    background: rgba(240,240,242,.86);
     color: #61626a;
 }
 :root[data-theme="pearl"] .theme-option:hover,
 :root[data-theme="pearl"] .theme-option.is-selected {
     border-color: rgba(58,59,66,.2);
-    background: #e9e9ec;
+    background: #dddde1;
     color: #292930;
     box-shadow: inset 0 1px 0 #fff;
 }
@@ -4237,8 +4418,8 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
 :root[data-theme="pearl"] .modal-content {
     border-color: rgba(58,59,66,.11);
     border-radius: 18px;
-    background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(248,248,249,.8));
-    box-shadow: 0 12px 30px rgba(29,30,36,.065), inset 0 1px 0 rgba(255,255,255,.95);
+    background: linear-gradient(145deg, rgba(239,239,242,.97), rgba(222,222,226,.9));
+    box-shadow: 0 12px 30px rgba(29,30,36,.085), inset 0 1px 0 rgba(255,255,255,.84);
     color: #292930;
     backdrop-filter: blur(18px) saturate(110%);
     -webkit-backdrop-filter: blur(18px) saturate(110%);
@@ -4252,10 +4433,10 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
 :root[data-theme="pearl"] .message-option:hover,
 :root[data-theme="pearl"] .theme-option:hover {
     border-color: rgba(58,59,66,.2);
-    box-shadow: 0 16px 34px rgba(29,30,36,.09), inset 0 1px 0 #fff;
+    box-shadow: 0 16px 34px rgba(29,30,36,.11), inset 0 1px 0 rgba(255,255,255,.84);
 }
 :root[data-theme="pearl"] .nav-box {
-    background: linear-gradient(145deg, #fff, #f2f2f4);
+    background: linear-gradient(145deg, #eeeeF0, #d9d9de);
 }
 :root[data-theme="pearl"] .nav-box .label,
 :root[data-theme="pearl"] .card h1,
@@ -4348,10 +4529,6 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     background: rgba(255,255,255,.94);
     color: #37383f;
 }
-:root[data-theme="pearl"] .ryex-feature-grid .nav-box {
-    border-color: rgba(58,59,66,.1);
-    background: linear-gradient(145deg, #fff, #f0f0f2);
-}
 :root[data-theme="pearl"] .ryex-account-card:not(.has-image) {
     border-color: rgba(58,59,66,.1);
     background: linear-gradient(145deg, #fff, #ededf0);
@@ -4365,11 +4542,6 @@ button, .btn, .sidebar-link, .nav-box, .back-btn, .menu-toggle { touch-action: m
     color: #62636b;
 }
 :root[data-theme="pearl"] .ryex-account-card .banner-live i { background: #55565e; box-shadow: 0 0 8px rgba(85,86,94,.2); }
-:root[data-theme="pearl"] .ryex-notifications .notification-count {
-    border-color: rgba(58,59,66,.1);
-    background: #ececef;
-    color: #55565e;
-}
 :root[data-theme="pearl"] .ryex-status-live { color: #5f6068; }
 :root[data-theme="pearl"] .ryex-status-live i { background: #666770; box-shadow: none; }
 :root[data-theme="pearl"] .ryex-butterfly {
@@ -4681,10 +4853,10 @@ body.sidebar-open { overflow: hidden; }
 }
 :root[data-theme="pearl"] .ryex-welcome {
     padding: 16px 20px;
-    border: 1px solid rgba(255,255,255,.88);
+    border: 1px solid rgba(255,255,255,.72);
     border-radius: 18px;
-    background: linear-gradient(120deg, rgba(255,255,255,.84), rgba(255,255,255,.42));
-    box-shadow: 0 12px 30px rgba(29,30,36,.055), inset 0 1px 0 #fff;
+    background: linear-gradient(120deg, rgba(239,239,242,.9), rgba(218,218,223,.64));
+    box-shadow: 0 12px 30px rgba(29,30,36,.075), inset 0 1px 0 rgba(255,255,255,.78);
     animation: ryex-intro-in 720ms var(--motion-ease) both;
 }
 :root[data-theme="pearl"] .ryex-brand-mark strong {
@@ -4701,5 +4873,8 @@ body.sidebar-open { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) {
     .app-shell .sidebar { transition: none; }
+    .ryex-carousel-slide,
+    .ryex-carousel-arrow,
+    .ryex-carousel-indicator { transition: none; }
     :root[data-theme="pearl"] .ryex-welcome { animation: none; }
 }

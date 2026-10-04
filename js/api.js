@@ -87,7 +87,7 @@ async function logout() {
 }
 
 const COLOR_THEME_OPTIONS = [
-    { id: "pearl", label: "Pearl", swatch: "#e8e8eb" },
+    { id: "pearl", label: "Pearl", swatch: "#d7d7dc" },
     { id: "default", label: "Default", swatch: "#101114" },
     { id: "midnight", label: "Midnight", swatch: "#0a0d14" },
     { id: "graphite", label: "Graphite", swatch: "#17191d" },
@@ -133,12 +133,12 @@ function applyTheme(themeId) {
     });
 }
 
-const themeMigrationKey = "ryex-pearl-workspace-v2";
+const themeMigrationKey = "ryex-default-workspace-v5";
 if (localStorage.getItem(themeMigrationKey) !== "1") {
-    applyTheme("pearl");
+    applyTheme("default");
     localStorage.setItem(themeMigrationKey, "1");
 } else {
-    applyTheme(localStorage.getItem("shoyu-theme") || "pearl");
+    applyTheme(localStorage.getItem("shoyu-theme") || "default");
 }
 
 // ---------- NAV (dipakai kotak-kotak di Dashboard, bukan sidebar) ---------- //
