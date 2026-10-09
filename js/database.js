@@ -289,7 +289,7 @@
 
     async function adjustExpiry(id, operation, duration, button) {
         const target = users.find((entry) => entry.id === id);
-        if (!target || (operation !== "lifetime" && !duration)) return;
+        if (!target || !duration) return;
         const action = operation === "add" ? "Add" : operation === "subtract" ? "Remove" : "Set lifetime for";
         const message = operation === "lifetime" ? `${action} ${target.username}?` : `${action} ${duration} ${operation === "add" ? "to" : "from"} ${target.username}'s expiry?`;
         if (!window.confirm(message)) return;
@@ -298,7 +298,7 @@
         expiryButtons.forEach((item) => { item.disabled = true; });
         button.textContent = "...";
         try {
-            await api(`/database/users/${encodeURIComponent(id)}/expiry`, { method: "PATCH", body: { operation, duration: operation === "lifetime" ? "" : duration } });
+            await api(`/database/users/${encodeURIComponent(id)}/expiry`, { method: "PATCH", body: { operation, duration } });
             toast(`Expiry ${operation === "add" ? "extended" : operation === "subtract" ? "reduced" : "set to lifetime"}.`, "success");
             await loadUsers();
         } catch (error) {

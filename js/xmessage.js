@@ -1,4 +1,4 @@
-(async function () {
+async function mountTravas(content, user, { embedded = false } = {}) {
     const escapeHtml = (value) => String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -6,11 +6,7 @@
         .replace(/\"/g, "&quot;")
         .replace(/'/g, "&#039;");
 
-    const user = await guardAuth();
-    if (!user) return;
-
-    const content = renderShell(user, "/xmessage.html");
-    setPageTitle("Travas");
+    if (!embedded) setPageTitle("Travas");
 
     let functions = [];
     let personalSessions = [];
@@ -83,7 +79,7 @@
     function render() {
         const defaultType = canUseGlobal ? "global" : "personal";
         content.innerHTML = `
-            <div class="page-intro"><div><span class="page-kicker">Message operations</span><h2>Travas</h2><p>Choose a sender and message type, then monitor delivery in real time.</p></div><a class="btn secondary" href="/whatsapp.html">Manage Senders</a></div>
+            <div class="page-intro"><div><span class="page-kicker">Message operations</span><h2>Travas</h2><p>Choose a sender and message type, then monitor delivery in real time.</p></div>${embedded ? "" : `<a class="btn secondary" href="/whatsapp.html">Manage Senders</a>`}</div>
             <div class="card xmessage-compose-card">
                 <div class="xmessage-compose-heading"><div><span class="page-kicker">Message operations</span><h3>Send Message</h3></div><span class="compose-state" id="compose-state">Choose a target</span></div>
 
@@ -361,4 +357,13 @@
     }
 
     render();
-})();
+}
+
+if (window.location.pathname === "/xmessage.html") {
+    (async function () {
+        const user = await guardAuth();
+        if (!user) return;
+        const content = renderShell(user, "/xmessage.html");
+        await mountTravas(content, user);
+    })();
+}

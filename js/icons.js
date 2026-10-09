@@ -3,6 +3,16 @@
 // stroke-width 1.6, gaya minimal (bukan filled/emoji).
 
 const ICONS = {
+    home: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m2.8 9 7.2-6 7.2 6v7.3a1 1 0 0 1-1 1h-4.4v-5.1H8.2v5.1H3.8a1 1 0 0 1-1-1V9z"/></svg>`,
+
+    grid: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="6" height="6" rx="1.5"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.5"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.5"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.5"/></svg>`,
+
+    radar: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="7.2"/><circle cx="10" cy="10" r="4.5"/><circle cx="10" cy="10" r="1.3"/><path d="M10 10 15.4 4.6M10 2.8v1M17.2 10h-1"/></svg>`,
+
+    globe: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.3"/><path d="M2.9 10h14.2M10 2.7c2 2 3 4.4 3 7.3s-1 5.3-3 7.3c-2-2-3-4.4-3-7.3s1-5.3 3-7.3z"/></svg>`,
+
+    palette: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10 2.5a7.5 7.5 0 1 0 0 15h1.1a1.8 1.8 0 0 0 1.2-3.2 1.5 1.5 0 0 1 1-2.6h1.1a3.1 3.1 0 0 0 3.1-3.1A6.1 6.1 0 0 0 10 2.5z"/><circle cx="6.3" cy="9" r=".8" fill="currentColor"/><circle cx="9" cy="5.9" r=".8" fill="currentColor"/><circle cx="13" cy="6.4" r=".8" fill="currentColor"/></svg>`,
+
     dashboard: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="6.5" height="6.5" rx="1.4"/><rect x="11" y="2.5" width="6.5" height="6.5" rx="1.4"/><rect x="2.5" y="11" width="6.5" height="6.5" rx="1.4"/><rect x="11" y="11" width="6.5" height="6.5" rx="1.4"/></svg>`,
 
     whatsapp: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 16.5l1.1-3.3a6.9 6.9 0 1 1 2.9 2.6L3.5 16.5z" stroke-linejoin="round"/><path d="M7.2 8.6c0 2.4 2.2 4.6 4.6 4.6" stroke-linecap="round"/></svg>`,
@@ -24,6 +34,8 @@ const ICONS = {
     database: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="10" cy="4.5" rx="6.5" ry="2.5"/><path d="M3.5 4.5v5c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5v-5M3.5 9.5v5c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5v-5"/>`,
 
     profile: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="6.8" r="3.2"/><path d="M3.6 16.8c1-3 3.6-4.6 6.4-4.6s5.4 1.6 6.4 4.6" stroke-linecap="round"/></svg>`,
+
+    bell: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 8a5.8 5.8 0 0 0-11.6 0c0 6-2 6-2 7.5h15.2C17.4 14 15.8 14 15.8 8z"/><path d="M8 18h4"/></svg>`,
 
     channel: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17.5 2.5L2.3 8.7l4.9 1.8M17.5 2.5l-2.6 14-6.7-5.5M17.5 2.5L8.6 11" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 

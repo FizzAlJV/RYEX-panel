@@ -54,16 +54,16 @@ async function loadBranding() {
     try {
         const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
         if (cached?.branding && Date.now() - cached.savedAt < 5 * 60 * 1000) {
-            window.__BRAND__ = cached.branding;
-            return cached.branding;
+            window.__BRAND__ = { ...cached.branding, webName: "Ryex" };
+            return window.__BRAND__;
         }
     } catch {}
 
     try {
         const data = await api("/branding");
-        window.__BRAND__ = data.branding;
+        window.__BRAND__ = { ...data.branding, webName: "Ryex" };
         try { sessionStorage.setItem(cacheKey, JSON.stringify({ branding: data.branding, savedAt: Date.now() })); } catch {}
-        return data.branding;
+        return window.__BRAND__;
     } catch {
         return window.__BRAND__ || null;
     }
@@ -86,62 +86,14 @@ async function logout() {
     window.location.href = "/index.html";
 }
 
-const COLOR_THEME_OPTIONS = [
-    { id: "pearl", label: "Pearl", swatch: "#d7d7dc" },
-    { id: "default", label: "Default", swatch: "#101114" },
-    { id: "midnight", label: "Midnight", swatch: "#0a0d14" },
-    { id: "graphite", label: "Graphite", swatch: "#17191d" },
-    { id: "frost", label: "Frost", swatch: "#dfe7ef" },
-    { id: "ocean", label: "Ocean", swatch: "#0b1c2a" },
-    { id: "ember", label: "Ember", swatch: "#241514" },
-    { id: "ruby", label: "Ruby Graphite", swatch: "#3a121c" },
-    { id: "violet", label: "Violet", swatch: "#21152f" },
-    { id: "forest", label: "Forest", swatch: "#10251d" },
-    { id: "amber", label: "Amber", swatch: "#30210d" },
-    { id: "daylight", label: "Daylight", swatch: "#f3f5f7" },
-    { id: "aurora", label: "Aurora", swatch: "#0e2a32" },
-    { id: "sunset", label: "Sunset", swatch: "#39212d" },
-    { id: "slate", label: "Slate", swatch: "#1d2736" },
-    { id: "red-velvet", label: "Red Velvet", swatch: "#2b0d18" },
-    { id: "crimson-glow", label: "Crimson Glow", swatch: "#2a050d" },
-    { id: "obsidian-luxe", label: "Obsidian Luxe", swatch: "#15171d" },
-    { id: "scarlet-noir", label: "Scarlet Noir", swatch: "#101014" },
-    { id: "cyber-lime", label: "Cyber Lime", swatch: "#0d1b15" },
-    { id: "neon-violet", label: "Neon Violet", swatch: "#191027" },
-    { id: "deep-emerald", label: "Deep Emerald", swatch: "#0b2119" },
-    { id: "arctic-glass", label: "Arctic Glass", swatch: "#102431" },
-    { id: "copper-noir", label: "Copper Noir", swatch: "#241410" },
-    { id: "dark-blue-neon", label: "Dark Blue Neon", swatch: "#071a32" },
-];
-
-const XTHEME_OPTIONS = [
-    { id: "matrix", label: "Matrix", swatch: "#071910" },
-    { id: "xtheme", label: "XTheme", swatch: "#071d26" },
-    { id: "anime-soft", label: "Anime Soft", swatch: "#dfeeff" },
-    { id: "discord-iphone", label: "Discord iPhone", swatch: "#8397d7" },
-];
-
-const THEME_OPTIONS = [...COLOR_THEME_OPTIONS, ...XTHEME_OPTIONS];
-
-function applyTheme(themeId) {
-    const theme = THEME_OPTIONS.some((item) => item.id === themeId) ? themeId : "pearl";
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem("shoyu-theme", theme);
-
-    document.querySelectorAll(".theme-option[data-theme]").forEach((option) => {
-        option.classList.toggle("is-selected", option.dataset.theme === theme);
-    });
+function applyTheme() {
+    document.documentElement.dataset.theme = "default";
+    localStorage.setItem("shoyu-theme", "default");
 }
 
-const themeMigrationKey = "ryex-default-workspace-v5";
-if (localStorage.getItem(themeMigrationKey) !== "1") {
-    applyTheme("default");
-    localStorage.setItem(themeMigrationKey, "1");
-} else {
-    applyTheme(localStorage.getItem("shoyu-theme") || "default");
-}
+applyTheme();
 
-// ---------- NAV (dipakai kotak-kotak di Dashboard, bukan sidebar) ---------- //
+// ---------- APP NAVIGATION ---------- //
 const NAV_ITEMS = [
     { href: "/dashboard.html", icon: "dashboard", label: "Dashboard", sub: "Overview" },
     { href: "/whatsapp.html", icon: "whatsapp", label: "WhatsApp", sub: "Manage senders", roles: ["OWNER", "ADMIN", "RESELLER", "VVIP", "PREMIUM"] },
@@ -152,7 +104,7 @@ const NAV_ITEMS = [
     { href: "/system.html", icon: "system", label: "System Status", sub: "System health", roles: ["OWNER", "ADMIN", "RESELLER", "VVIP", "PREMIUM"] },
     { href: "/tools.html", icon: "system", label: "Tools", sub: "Useful utilities" },
     { href: "/database.html", icon: "database", label: "Database", sub: "Manage users", roles: ["OWNER", "ADMIN", "RESELLER"] },
-    { href: "/profile.html", icon: "profile", label: "Profile", sub: "Telegram profile" },
+    { href: "/profile.html", icon: "profile", label: "Profile", sub: "Account info" },
 ];
 
 function isInternalPageLink(anchor, event) {
@@ -193,7 +145,10 @@ function renderShell(user, activeHref) {
         ? `<a class="sidebar-link" href="${brand.telegramOwnerContact}" target="_blank" rel="noopener">${icon("owner")}<span>Owner</span></a>`
         : "";
     const logoMarkup = brand.logoPhoto
-        ? `<img class="brand-photo" src="${brand.logoPhoto}" alt="${brand.webName || "RYEX - PANEL"} logo">`
+        ? `<img class="brand-photo" src="${brand.logoPhoto}" alt="Ryex logo">`
+        : "";
+    const menuLogoMarkup = brand.logoPhoto
+        ? `<img class="menu-logo" src="${brand.logoPhoto}" alt="Open sidebar">`
         : "";
     const visibleNavItems = NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(user.role));
     const navigation = visibleNavItems.map((item) => `
@@ -202,31 +157,22 @@ function renderShell(user, activeHref) {
             <span class="sidebar-link-copy"><strong>${item.label}</strong><small>${item.sub}</small></span>
         </a>
     `).join("");
-    const colorThemeOptions = COLOR_THEME_OPTIONS.map((theme, index) => {
-        const isSelected = document.documentElement.dataset.theme === theme.id;
-        return `
-            <button type="button" class="theme-option ${isSelected ? "is-selected" : ""} ${index >= 9 ? "theme-option-extra" : ""}" data-theme="${theme.id}">
-                <i style="--swatch:${theme.swatch}"></i>
-                <span>${theme.label}</span>
-            </button>
-        `;
-    }).join("");
-    const xThemeOptions = XTHEME_OPTIONS.map((theme) => {
-        const isSelected = document.documentElement.dataset.theme === theme.id;
-        return `
-            <button type="button" class="theme-option ${isSelected ? "is-selected" : ""}" data-theme="${theme.id}">
-                <i style="--swatch:${theme.swatch}"></i>
-                <span>${theme.label}</span>
-            </button>
-        `;
-    }).join("");
-
+    const selectableNavItems = visibleNavItems.filter((item) =>
+        !["/dashboard.html", "/tools.html"].includes(item.href)
+    );
+    const menuItems = selectableNavItems.map((item) => `
+            <a class="dock-menu-item ${activeHref === item.href ? "active" : ""}" href="${item.href}" ${activeHref === item.href ? 'aria-current="page"' : ""}>
+                ${icon(item.icon)}<span>${item.label}</span>
+            </a>
+    `).join("");
+    const homeItem = visibleNavItems.find((item) => item.href === "/dashboard.html");
+    const toolsItem = visibleNavItems.find((item) => item.href === "/tools.html");
+    const menuIsActive = selectableNavItems.some((item) => item.href === activeHref);
     shell.innerHTML = `
-        <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Close navigation" hidden></button>
-        <aside class="sidebar" id="sidebar" aria-hidden="true" inert>
+        <aside class="sidebar" id="sidebar">
             <a class="sidebar-brand" href="/dashboard.html" aria-label="Open dashboard" title="Dashboard">
                 ${logoMarkup}
-                <span class="sidebar-brand-copy"><strong class="brand-wordmark brand-wordmark-sidebar">${brand.webName || "RYEX - PANEL"}</strong><small>${brand.panelLabel || "Control panel"}</small></span>
+                <span class="sidebar-brand-copy"><strong class="brand-wordmark brand-wordmark-sidebar">Ryex</strong><small>${brand.panelLabel || "Control panel"}</small></span>
             </a>
             <div class="sidebar-section-label">Workspace</div>
             <nav class="sidebar-navigation" aria-label="Primary navigation">
@@ -244,112 +190,245 @@ function renderShell(user, activeHref) {
         <main class="main">
             <div class="topbar">
                 <div class="topbar-left">
-                    <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" title="Open navigation">${icon("menu")}</button>
+                    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle sidebar" title="Toggle sidebar">${menuLogoMarkup}</button>
                     ${!isDashboard ? `<a class="back-btn" href="/dashboard.html">${icon("back")}</a>` : ""}
                     <div class="topbar-identity"><h1 id="page-title"></h1></div>
                 </div>
-                        <div class="topbar-actions">
-                            <div class="theme-menu-wrap">
-                                <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Choose theme" aria-haspopup="true" aria-expanded="false">${icon("system")}<span>Theme</span></button>
-                                <div class="theme-menu" id="theme-menu" hidden>
-                                    <div class="theme-group"><div class="theme-group-label">Color</div>${colorThemeOptions}</div>
-                                    <div class="theme-group"><div class="theme-group-label">XTheme</div>${xThemeOptions}</div>
-                                    <button type="button" class="theme-more" id="theme-more">More themes</button>
-                                </div>
+                <div class="topbar-actions">
+                    <div class="notification-wrap">
+                        <button class="notification-toggle" id="notification-toggle" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="notification-panel">
+                            ${icon("bell")}
+                            <span class="notification-count" id="notification-count" hidden></span>
+                        </button>
+                        <section class="notification-panel" id="notification-panel" aria-label="Notifications" hidden>
+                            <div class="notification-panel-heading">
+                                <div><strong>Notifications</strong><span id="notification-summary">Loading...</span></div>
+                                <button class="notification-read-all" id="notification-read-all" type="button" disabled>Mark all read</button>
                             </div>
-                        </div>
+                            <div class="notification-list" id="notification-list" aria-live="polite"></div>
+                        </section>
+                    </div>
+                    <span class="theme-toggle" aria-label="Active theme">Default</span>
+                    <span class="role-badge">${user.role}</span>
+                </div>
             </div>
             <div id="page-content"></div>
         </main>
+        <nav class="bottom-dock" aria-label="Navigasi utama">
+            ${homeItem ? `<a class="dock-action ${activeHref === homeItem.href ? "active" : ""}" href="${homeItem.href}" aria-label="Beranda" title="Beranda" ${activeHref === homeItem.href ? 'aria-current="page"' : ""}>${icon("home")}<span>Beranda</span></a>` : ""}
+            <div class="dock-menu-wrap">
+                <button class="dock-action ${menuIsActive ? "active" : ""}" id="dock-menu-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="dock-menu-panel" ${menuIsActive ? 'aria-current="page"' : ""}>
+                    ${icon("grid")}<span>Menu</span>
+                </button>
+                <div class="dock-menu-panel" id="dock-menu-panel" hidden>
+                    ${menuItems}
+                </div>
+            </div>
+            ${toolsItem ? `<a class="dock-action ${activeHref === toolsItem.href ? "active" : ""}" href="${toolsItem.href}" aria-label="Tools" title="Tools" ${activeHref === toolsItem.href ? 'aria-current="page"' : ""}>${icon("globe")}<span>Tools</span></a>` : ""}
+            <button class="dock-action dock-theme-action" id="dock-theme-action" type="button" aria-label="Tema: Default" title="Tema Default">
+                ${icon("palette")}<span>Tema</span>
+            </button>
+        </nav>
     `;
 
+    const bottomDock = shell.querySelector(".bottom-dock");
+    bottomDock.remove();
     document.body.prepend(shell);
+    document.body.append(bottomDock);
     document.getElementById("logout-btn").addEventListener("click", logout);
-    const sidebar = document.getElementById("sidebar");
-    const main = shell.querySelector(".main");
-    const sidebarToggle = document.getElementById("menu-toggle");
-    const sidebarBackdrop = document.getElementById("sidebar-backdrop");
-    const closeSidebar = (restoreFocus = false) => {
-        sidebar.classList.remove("open");
-        sidebar.setAttribute("aria-hidden", "true");
-        sidebar.inert = true;
-        main.inert = false;
-        document.body.classList.remove("sidebar-open");
-        sidebarBackdrop.hidden = true;
-        sidebarToggle.setAttribute("aria-expanded", "false");
-        sidebarToggle.setAttribute("aria-label", "Open navigation");
-        sidebarToggle.title = "Open navigation";
-        if (restoreFocus) sidebarToggle.focus();
-    };
-    const openSidebar = () => {
-        sidebar.classList.add("open");
-        sidebar.removeAttribute("aria-hidden");
-        sidebar.inert = false;
-        main.inert = true;
-        document.body.classList.add("sidebar-open");
-        sidebarBackdrop.hidden = false;
-        sidebarToggle.setAttribute("aria-expanded", "true");
-        sidebarToggle.setAttribute("aria-label", "Close navigation");
-        sidebarToggle.title = "Close navigation";
-        sidebar.querySelector("a")?.focus();
-    };
-    sidebarToggle.addEventListener("click", () => {
-        if (sidebar.classList.contains("open")) closeSidebar(true);
-        else openSidebar();
+    initNotificationCenter();
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+        document.querySelector(".app-shell").classList.toggle("sidebar-collapsed");
+        document.getElementById("sidebar").classList.toggle("open");
     });
-    sidebarBackdrop.addEventListener("click", () => closeSidebar(true));
-    sidebar.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => closeSidebar()));
+    const dockMenuToggle = document.getElementById("dock-menu-toggle");
+    const dockMenuPanel = document.getElementById("dock-menu-panel");
+    dockMenuToggle.addEventListener("click", () => {
+        const expanded = dockMenuToggle.getAttribute("aria-expanded") === "true";
+        dockMenuToggle.setAttribute("aria-expanded", String(!expanded));
+        dockMenuPanel.hidden = expanded;
+    });
+    document.getElementById("dock-theme-action").addEventListener("click", () => {
+        applyTheme();
+        toast("Tema Default aktif.", "info");
+    });
     document.addEventListener("pointerdown", (event) => {
-        if (sidebar.classList.contains("open") && !sidebar.contains(event.target) && !sidebarToggle.contains(event.target) && !sidebarBackdrop.contains(event.target)) {
-            closeSidebar();
+        if (!dockMenuPanel.contains(event.target) && !dockMenuToggle.contains(event.target)) {
+            dockMenuPanel.hidden = true;
+            dockMenuToggle.setAttribute("aria-expanded", "false");
         }
     });
     document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && sidebar.classList.contains("open")) closeSidebar(true);
-    });
-    const themeToggle = document.getElementById("theme-toggle");
-    const themeMenu = document.getElementById("theme-menu");
-    const themeMore = document.getElementById("theme-more");
-    const themeMenuWrap = themeToggle.closest(".theme-menu-wrap");
-    const closeThemeMenu = () => {
-        themeMenu.hidden = true;
-        themeToggle.setAttribute("aria-expanded", "false");
-    };
-    themeToggle.addEventListener("click", (event) => {
-        event.stopPropagation();
-        themeMenu.hidden = !themeMenu.hidden;
-        themeToggle.setAttribute("aria-expanded", String(!themeMenu.hidden));
-    });
-    themeMore.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const expanded = themeMenu.classList.toggle("is-expanded");
-        themeMore.textContent = expanded ? "Show fewer" : "More themes";
-    });
-    themeMenu.querySelectorAll("[data-theme]").forEach((option) => {
-        option.addEventListener("click", () => {
-            applyTheme(option.dataset.theme);
-            closeThemeMenu();
-        });
+        if (event.key !== "Escape") return;
+        dockMenuPanel.hidden = true;
+        dockMenuToggle.setAttribute("aria-expanded", "false");
     });
     document.addEventListener("pointerdown", (event) => {
-        if (themeMenu.hidden || themeMenuWrap.contains(event.target)) return;
-        closeThemeMenu();
+        const sidebar = document.getElementById("sidebar");
+        const toggle = document.getElementById("menu-toggle");
+        if (window.innerWidth <= 860 && sidebar.classList.contains("open") && !sidebar.contains(event.target) && !toggle.contains(event.target)) {
+            sidebar.classList.remove("open");
+        }
     });
     document.addEventListener("keydown", (event) => {
-        if (event.key !== "Escape" || themeMenu.hidden) return;
-        closeThemeMenu();
-        themeToggle.focus();
+        if (event.key !== "Escape") return;
+        const sidebar = document.getElementById("sidebar");
+        if (window.innerWidth <= 860) sidebar.classList.remove("open");
     });
-    themeMenu.addEventListener("click", (event) => event.stopPropagation());
-
     return document.getElementById("page-content");
+}
+
+function initNotificationCenter() {
+    const toggle = document.getElementById("notification-toggle");
+    const panel = document.getElementById("notification-panel");
+    const list = document.getElementById("notification-list");
+    const count = document.getElementById("notification-count");
+    const summary = document.getElementById("notification-summary");
+    const readAllButton = document.getElementById("notification-read-all");
+    if (!toggle || !panel || !list || !count || !summary || !readAllButton) return;
+
+    let unreadCount = 0;
+    let notificationItems = [];
+    let requestPending = false;
+
+    const escapeHtml = (value) => String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+
+    const safeInternalLink = (value) => {
+        if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) return "";
+        const url = new URL(value, window.location.origin);
+        return url.origin === window.location.origin ? `${url.pathname}${url.search}${url.hash}` : "";
+    };
+
+    const renderNotifications = () => {
+        count.hidden = unreadCount === 0;
+        count.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+        toggle.setAttribute("aria-label", unreadCount ? `Notifications, ${unreadCount} unread` : "Notifications");
+        summary.textContent = unreadCount ? `${unreadCount} unread` : "You're all caught up";
+        readAllButton.disabled = unreadCount === 0 || requestPending;
+
+        if (!notificationItems.length) {
+            list.innerHTML = `<div class="notification-empty">No notifications yet.</div>`;
+            return;
+        }
+
+        list.innerHTML = notificationItems.map((item) => {
+            const unread = !item.read;
+            const stamp = item.createdAt && Number.isFinite(Date.parse(item.createdAt))
+                ? new Date(item.createdAt).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })
+                : "";
+            const link = safeInternalLink(item.link);
+            return `
+                <article class="notification-item ${unread ? "unread" : ""}" data-notification-id="${escapeHtml(item.id)}" ${link ? `data-notification-link="${escapeHtml(link)}"` : ""}>
+                    <span class="notification-dot" aria-hidden="true"></span>
+                    <div class="notification-copy">
+                        <strong>${escapeHtml(item.title || "Notification")}</strong>
+                        <p>${escapeHtml(item.message)}</p>
+                        ${stamp ? `<time>${escapeHtml(stamp)}</time>` : ""}
+                    </div>
+                    ${unread ? `<button class="notification-mark-read" type="button" data-mark-notification="${escapeHtml(item.id)}" aria-label="Mark ${escapeHtml(item.title || "notification")} as read" title="Mark as read">✓</button>` : ""}
+                </article>
+            `;
+        }).join("");
+    };
+
+    const loadNotifications = async () => {
+        if (requestPending) return;
+        requestPending = true;
+        readAllButton.disabled = true;
+        try {
+            const response = await api("/dashboard/notifications");
+            notificationItems = Array.isArray(response.notifications) ? response.notifications : [];
+            unreadCount = notificationItems.filter((item) => !item.read).length;
+            renderNotifications();
+        } catch (error) {
+            summary.textContent = "Couldn't load notifications";
+            list.innerHTML = `<div class="notification-error">${escapeHtml(error.message)}<button type="button" class="notification-retry" id="notification-retry">Try again</button></div>`;
+        } finally {
+            requestPending = false;
+            readAllButton.disabled = unreadCount === 0;
+        }
+    };
+
+    const markRead = async (notificationId) => {
+        try {
+            await api(`/dashboard/notifications/${encodeURIComponent(notificationId)}/read`, { method: "POST" });
+            await loadNotifications();
+        } catch (error) {
+            toast(`Couldn't update notification: ${error.message}`, "error");
+        }
+    };
+
+    toggle.addEventListener("click", () => {
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!isOpen));
+        panel.hidden = isOpen;
+        if (!isOpen) loadNotifications();
+    });
+
+    readAllButton.addEventListener("click", async () => {
+        if (requestPending || unreadCount === 0) return;
+        requestPending = true;
+        readAllButton.disabled = true;
+        try {
+            await api("/dashboard/notifications/read-all", { method: "POST" });
+            notificationItems = notificationItems.map((item) => ({ ...item, read: true }));
+            unreadCount = 0;
+            renderNotifications();
+        } catch (error) {
+            toast(`Couldn't update notifications: ${error.message}`, "error");
+        } finally {
+            requestPending = false;
+            readAllButton.disabled = unreadCount === 0;
+        }
+    });
+
+    list.addEventListener("click", async (event) => {
+        const retryButton = event.target.closest("#notification-retry");
+        if (retryButton) {
+            loadNotifications();
+            return;
+        }
+        const markButton = event.target.closest("[data-mark-notification]");
+        if (markButton) {
+            event.stopPropagation();
+            markRead(markButton.dataset.markNotification);
+            return;
+        }
+        const item = event.target.closest(".notification-item");
+        if (!item) return;
+        const link = item.dataset.notificationLink;
+        if (item.classList.contains("unread")) await markRead(item.dataset.notificationId);
+        if (link) window.location.assign(link);
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+        if (!panel.contains(event.target) && !toggle.contains(event.target)) {
+            panel.hidden = true;
+            toggle.setAttribute("aria-expanded", "false");
+        }
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        panel.hidden = true;
+        toggle.setAttribute("aria-expanded", "false");
+    });
+
+    loadNotifications();
+    const refreshTimer = window.setInterval(() => {
+        if (!document.hidden) loadNotifications();
+    }, 60_000);
+    window.addEventListener("pagehide", () => window.clearInterval(refreshTimer), { once: true });
 }
 
 function setPageTitle(title) {
     const el = document.getElementById("page-title");
     if (el) el.textContent = title;
-    const brand = window.__BRAND__ || {};
-    document.title = `${title} - ${brand.webName || "Panel"}`;
+    document.title = `${title} - Ryex`;
 }
 
 function skeletonGrid(count = 4) {

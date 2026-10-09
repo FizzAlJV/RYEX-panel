@@ -1,6 +1,6 @@
-# RYEX - PANEL — Frontend
+# Ryex Panel — Frontend
 
-Folder ini berisi frontend RYEX - PANEL. Folder yang sama dapat disajikan oleh backend lokal/VPS atau dipublish ke Vercel.
+Folder ini berisi frontend Ryex Panel. Folder yang sama dapat disajikan oleh backend lokal/VPS atau dipublish ke Vercel.
 
 ## Struktur folder
 
@@ -122,12 +122,3 @@ Frontend ini sudah menyiapkan semua halaman seperti:
 - Database
 
 Semua halaman sudah menggunakan API path `/api/...` yang akan diteruskan lewat rewrite di `vercel.json`.
-
-## Tema dan tampilan workspace
-
-- Tampilan awal semua halaman panel memakai tema **Pearl** abu-abu dan putih, dengan permukaan glass yang terang.
-- Preferensi tema lama dimigrasikan ke Pearl satu kali; setelah itu pilihan tema di menu Appearance tetap disimpan.
-- Dashboard memiliki command center baru dengan wordmark 3D, kupu-kupu dekoratif beranimasi, kartu metrik, pintasan fitur, status, notifikasi, dan aktivitas.
-- Video hero dashboard memakai URL Catbox, autoplay muted, loop, dan tanpa kontrol pemutar atau caption.
-- Video yang sama ditampilkan di panel intro login. Halaman Profile menampilkan identitas Telegram bersama form ganti password.
-- Animasi dekoratif menghormati preferensi `prefers-reduced-motion`.
